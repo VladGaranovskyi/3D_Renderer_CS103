@@ -1,3 +1,6 @@
+#ifndef OBJLOADER_H
+#define OBJLOADER_H
+
 #include "../Geometry/Mesh.h"
 #include <string>
 
@@ -6,3 +9,4 @@ public:
     // load the 3D object into Mesh
     bool load(std::string filename, Mesh& outMesh);
 };
+#endif

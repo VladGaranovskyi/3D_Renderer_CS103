@@ -1,3 +1,6 @@
+#ifndef MAINRENDERER_H
+#define MAINRENDERER_H
+
 #include <SDL2/SDL.h>
 
 class MainRenderer {
@@ -24,3 +27,4 @@ private:
     int width;
     int height;
 };
+#endif

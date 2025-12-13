@@ -1,3 +1,6 @@
+#ifndef MODEL_H
+#define MODEL_H
+
 #include "Mesh.h"
 #include "Transform.h"
 #include "Camera.h"
@@ -10,5 +13,6 @@ public:
 
     Model(const Mesh& m, const Transform& t);
 
-    void Draw(const MainRenderer& renderer, const Camera& camera);
+    void Draw(MainRenderer& renderer, const Camera& camera);
 };
+#endif

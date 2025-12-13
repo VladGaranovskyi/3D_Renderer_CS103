@@ -1,3 +1,6 @@
+#ifndef CAMERA_H
+#define CAMERA_H
+
 #include "Vector3.h"
 #include "Vector2.h"
 
@@ -7,8 +10,8 @@ class Camera{
         Vector3 rotation;
 
         // Scales of x, y of the screen
-        float scaleX = 1.0f;
-        float scaleY = 1.0f;
+        float scaleX = 0.0f;
+        float scaleY = 0.0f;
 
         // Distance of the camera to the screen
         float scaleZ;
@@ -22,11 +25,12 @@ class Camera{
         Vector3 WorldToCamera(const Vector3& worldPoint) const;
 
         // Convert abstract coordinates to pixels for SDL2
-        Vector2 CameraToScreen(const Vector2& cameraPoint) const;
+        Vector2 CameraToScreen(const Vector3& cameraPoint) const;
 
         // Helper method
-        Vector2 ProjectOnScreen(const Vector2& worldPoint) const;
+        Vector2 ProjectOnScreen(const Vector3& worldPoint) const;
 
         // Change scale Z
         void Zoom(float incr);
 };
+#endif
