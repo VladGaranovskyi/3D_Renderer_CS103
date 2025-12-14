@@ -12,6 +12,8 @@ public:
     void ShowModel();
     void DrawPixel(int x, int y);
     void DrawLine(int x1, int y1, int x2, int y2);
+    void SetColor(int r, int g, int b);
+    void DrawHorizontalLine(int x1, int x2, int y);
 
     int GetWidth() const  { 
         return width; 
@@ -19,6 +21,14 @@ public:
     
     int GetHeight() const { 
         return height; 
+    }
+
+    SDL_Window* GetWindow() const{
+        return window;
+    }
+
+    SDL_Renderer* GetRenderer() const{
+        return renderer;
     }
 
 private:

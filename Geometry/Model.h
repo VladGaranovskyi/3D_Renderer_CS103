@@ -13,6 +13,8 @@ public:
 
     Model(const Mesh& m, const Transform& t);
 
-    void Draw(MainRenderer& renderer, const Camera& camera);
+    void BuildTriangles(MainRenderer& renderer, const Camera& camera);
+    void DrawEdges(MainRenderer& renderer);
+    void DrawFilled(MainRenderer& renderer);
 };
 #endif

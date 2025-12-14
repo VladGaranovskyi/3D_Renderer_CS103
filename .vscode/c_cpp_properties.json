@@ -6,6 +6,8 @@
             "intelliSenseMode": "windows-gcc-x64",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/imgui",
+                "${workspaceFolder}/imgui/backends",
                 "C:/msys64/mingw64/include"
             ]
         }

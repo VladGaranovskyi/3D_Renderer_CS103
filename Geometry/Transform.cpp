@@ -46,7 +46,6 @@ Vector3 Transform::LocalToWorld(const Vector3* localPoint, const Vector3& center
     y = p.x * sinTheta + p.y * cosTheta;
     p.x = x;
     p.y = y;
-
-    p.AddVector(position);
-    return p;
+    
+    return p.AddVector(position);
 }

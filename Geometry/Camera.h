@@ -28,7 +28,7 @@ class Camera{
         Vector2 CameraToScreen(const Vector3& cameraPoint) const;
 
         // Helper method
-        Vector2 ProjectOnScreen(const Vector3& worldPoint) const;
+        Vector3 ProjectOnScreen(const Vector3& worldPoint) const;
 
         // Change scale Z
         void Zoom(float incr);

@@ -3,6 +3,7 @@
 
 #include "Vector3.h"
 #include "Triangle.h"
+#include "ScreenTriangle.h"
 #include <vector>
 
 class Mesh{
@@ -10,6 +11,7 @@ class Mesh{
         Vector3 meshCenter;
         std::vector<Vector3> vertices;
         std::vector<Triangle> triangles;
+        std::vector<ScreenTriangle> screenTriangles;
         Mesh();
         Mesh(std::vector<Vector3> v, std::vector<Triangle> t);
 

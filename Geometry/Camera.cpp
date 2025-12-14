@@ -52,18 +52,18 @@ Vector2 Camera::CameraToScreen(const Vector3& cameraPoint) const{
     return p;
 }
 
-Vector2 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
-    Vector3 p3 = worldPoint;
+Vector3 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
+    Vector3 p3 = WorldToCamera(worldPoint);
     Vector2 screenPoint;
-
-    p3 = WorldToCamera(worldPoint);
+    
     screenPoint = CameraToScreen(p3);
     if(screenPoint.x == -1 && screenPoint.y == -1){
-        return screenPoint;
+        return Vector3(-1, -1, 0);
     }
 
     screenPoint.x = screenWidth * 0.5f + screenPoint.x * screenWidth * 0.2f;
     screenPoint.y = screenHeight * 0.5f - screenPoint.y * screenHeight * 0.2f;
+    
 
-    return screenPoint;
+    return Vector3(screenPoint.x, screenPoint.y, p3.z);
 }
