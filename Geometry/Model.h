@@ -11,10 +11,13 @@ public:
     Mesh mesh;
     Transform transform;
 
+    Model();
     Model(const Mesh& m, const Transform& t);
 
+    void Draw(MainRenderer& renderer, const Camera& camera) const;
     void BuildTriangles(MainRenderer& renderer, const Camera& camera);
-    void DrawEdges(MainRenderer& renderer);
     void DrawFilled(MainRenderer& renderer);
+    void DrawEdges(MainRenderer& renderer);
 };
+
 #endif
