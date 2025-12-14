@@ -70,13 +70,20 @@ void Model::BuildTriangles(MainRenderer& renderer, const Camera& camera){
 
         
         // Backface culling
-        Vector3 v12 = v2World.SubtractVector(v1World);
-        Vector3 v13 = v3World.SubtractVector(v1World);
+        if(isCull){
+            Vector3 v12 = v2World.SubtractVector(v1World);
+            Vector3 v13 = v3World.SubtractVector(v1World);
 
-        Vector3 triangleNormal = v12.CrossVector(v13);
-        float dot = triangleNormal.DotVector(camera.position);
-
-        if (dot < 0) continue;
+            Vector3 triangleNormal = v12.CrossVector(v13);
+            float dot = triangleNormal.DotVector(camera.position);
+            if(isFlip){
+                if (dot <= 0) continue;
+            }
+            else{
+                if (dot >= 0) continue;
+            }
+        }
+        
 
         // Get projection
         Vector3 screenPoint1 = camera.ProjectOnScreen(v1World);

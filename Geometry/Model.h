@@ -10,6 +10,8 @@ class Model {
 public:
     Mesh mesh;
     Transform transform;
+    bool isCull = true;
+    bool isFlip = false;
 
     Model();
     Model(const Mesh& m, const Transform& t);

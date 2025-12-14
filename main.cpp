@@ -70,6 +70,8 @@ int main(int argc, char** argv)
     Uint64 lastCounter = SDL_GetPerformanceCounter();
     const double freq = (double)SDL_GetPerformanceFrequency();
 
+    model.BuildTriangles(renderer, camera);
+
     while (running)
     {
         Uint64 now = SDL_GetPerformanceCounter();
@@ -96,17 +98,34 @@ int main(int argc, char** argv)
         {
             DrawViewerUI(ui, mode);
 
+            // Apply zoom slider's value
+            if(abs(camera.scaleZ - ui.camScaleZ) > 0.01f){
+                camera.scaleZ = ui.camScaleZ;
+                model.BuildTriangles(renderer, camera);
+            }
+
+            // Get keybord input
             const Uint8* keys = SDL_GetKeyboardState(nullptr);
 
-            if (keys[SDL_SCANCODE_LEFT])
+            // Rotate y 
+            if (keys[SDL_SCANCODE_LEFT])  {
                 model.transform.rotation.y -= (float)(yawSpeed * dt);
-            if (keys[SDL_SCANCODE_RIGHT])
+                model.BuildTriangles(renderer, camera);
+            }
+            if (keys[SDL_SCANCODE_RIGHT]) {
                 model.transform.rotation.y += (float)(yawSpeed * dt);
+                model.BuildTriangles(renderer, camera);
+            }
 
-            if (keys[SDL_SCANCODE_UP])
+            // Rotate x
+            if (keys[SDL_SCANCODE_UP])    {
                 model.transform.rotation.x -= (float)(yawSpeed * dt);
-            if (keys[SDL_SCANCODE_DOWN])
+                model.BuildTriangles(renderer, camera);
+            }
+            if (keys[SDL_SCANCODE_DOWN])  {
                 model.transform.rotation.x += (float)(yawSpeed * dt);
+                model.BuildTriangles(renderer, camera);
+            }
         }
 
         

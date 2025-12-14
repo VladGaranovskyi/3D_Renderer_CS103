@@ -50,6 +50,9 @@ void ApplyUIToScene(const UIState& ui, Model& model, Camera& camera)
     camera.position = Vector3{ ui.camPosition[0], ui.camPosition[1], ui.camPosition[2] };
     camera.rotation = Vector3{ ui.camRotation[0], ui.camRotation[1], ui.camRotation[2] };
     camera.scaleZ = ui.camScaleZ;
+
+    model.isCull = ui.cull;
+    model.isFlip = ui.flip;
 }
 
 
@@ -94,6 +97,9 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
                        "%s", ui.status);
 
     ImGui::Separator();
+
+    ImGui::Checkbox("Enable culling", &ui.cull);
+    ImGui::Checkbox("Flip normals", &ui.flip);
 
     ImGui::Text("Object Transform");
     ImGui::InputFloat3("Obj Position", ui.objPosition);

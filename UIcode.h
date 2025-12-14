@@ -39,6 +39,8 @@ class UIState {
         bool modelLoaded  = false;
         bool loadFailed   = false;
         char status[256]  = "A model needs to be loaded";
+        bool cull = true;
+        bool flip = false;
 };
 
 void ApplyUIToScene(const UIState& ui, Model& model, Camera& camera);
