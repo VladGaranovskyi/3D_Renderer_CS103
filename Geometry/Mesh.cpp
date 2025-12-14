@@ -21,10 +21,14 @@ Mesh::Mesh(vector<Vector3> v, vector<Triangle> t){
 
 void Mesh::ComputeMeshCenter(){
     Vector3 center;
+    if (vertices.empty()) {
+        meshCenter = center;
+        return;
+    }
     for(int i = 0; i < vertices.size(); i++){
         center.x += vertices.at(i).x;
         center.y += vertices.at(i).y;
         center.z += vertices.at(i).z;
     }
-    center = center.MultiplyVector(1.0f / vertices.size());
+    meshCenter = center.MultiplyVector(1.0f / vertices.size());
 }

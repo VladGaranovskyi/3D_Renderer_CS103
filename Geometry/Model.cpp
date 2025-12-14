@@ -44,6 +44,11 @@ static vector<int> ConcatVectors(const vector<int>& a, const vector<int>& b)
     return out;
 }
 
+Model::Model(){
+    mesh = Mesh();
+    transform = Transform();
+}
+
 Model::Model(const Mesh& m, const Transform& t){
     mesh = m;
     transform = t;

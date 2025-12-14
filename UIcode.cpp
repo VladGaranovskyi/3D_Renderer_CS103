@@ -55,8 +55,8 @@ void ApplyUIToScene(const UIState& ui, Model& model, Camera& camera)
 
 bool LoadMeshStub(const char* path, Mesh& outMesh)
 {
-    outMesh = MakeCubeMesh();
-    return true;
+    string pathStr(path);
+    return LoadOBJFile(pathStr, outMesh);
 }
 
 // UI for settings
@@ -74,18 +74,19 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
         Mesh loaded;
         ui.loadFailed = false;
 
-        // Objloader when done
         bool ok = LoadMeshStub(ui.objFilePath, loaded);
 
-        if (ok)
+        if (ok && !loaded.vertices.empty())
         {
             model.mesh = loaded;
             ui.modelLoaded = true;
+            strcpy(ui.status, "Model loaded successfully");
         }
         else
         {
             ui.modelLoaded = false;
             ui.loadFailed = true;
+            strcpy(ui.status, "Failed to load model");
         }
     }
 

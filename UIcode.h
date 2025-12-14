@@ -1,11 +1,12 @@
 #ifndef UICODE_H
 #define UICODE_H
 
-#include "imgui.h"
-#include "imgui_impl_sdl2.h"
-#include "imgui_impl_sdlrenderer2.h"
+#include "imgui/imgui.h"
+#include "imgui/backends/imgui_impl_sdl2.h"
+#include "imgui/backends/imgui_impl_sdlrenderer2.h"
 #include <cmath>
 #include "Management/MainRenderer.h"
+#include "Management/ObjLoader.h"
 #include "Geometry/Model.h"
 #include "Geometry/Mesh.h"
 #include "Geometry/Transform.h"
