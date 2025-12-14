@@ -1,12 +1,32 @@
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 
+#include "Edge.cpp"
 #include "../Geometry/Mesh.h"
-#include <string>
+#include "../Geometry/Vector3.h"
+#include "../Geometry/Triangle.h"
 
-class ObjLoader {
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+
+using namespace std;
+
+class OBJ {
 public:
-    // load the 3D object into Mesh
-    bool load(std::string filename, Mesh& outMesh);
+    vector<Vector3> vertices;
+    vector<Edge> edges;
+    vector<vector<int>> faces;
+    string filePath;
+
+    OBJ(const string& path);
+    
+    // convert to mesh with triangulated faces
+    Mesh ToMesh();
 };
+
+// load obj file and return mesh with triangulated faces
+bool LoadOBJFile(const string& path, Mesh& outMesh);
+
 #endif
