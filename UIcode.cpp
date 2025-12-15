@@ -100,6 +100,10 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
 
     ImGui::Checkbox("Enable culling", &ui.cull);
     ImGui::Checkbox("Flip normals", &ui.flip);
+    ImGui::InputFloat("Camera Rotation Speed", &ui.mouseCameraRotationSpeed);
+    ImGui::InputFloat("Object Rotation Speed", &ui.mouseObjectRotationSpeed);
+    ImGui::InputFloat("Camera Movement Speed", &ui.cameraMovementSpeed);
+    ImGui::InputFloat("Object Movement Speed", &ui.objectMovementSpeed);
 
     ImGui::Text("Object Transform");
     ImGui::InputFloat3("Obj Position", ui.objPosition);
@@ -138,10 +142,17 @@ void DrawViewerUI(UIState& ui, AppMode& mode)
 {
     ImGui::Begin("Viewer");
     ImGui::Text("Controls:");
-    ImGui::BulletText("Arrows: Rotate object");
-    ImGui::BulletText("Backspace: Return to the settings");
+    ImGui::BulletText("Arrows: Move the object in xy plane");
+    ImGui::BulletText("+/-: Move the object on the z-axis");
+    ImGui::BulletText("Left Mouse Button: Hold LMB and move the mouse to rotate the object");
+    ImGui::BulletText("Right Mous Button: Hold RMB and move the mouse to rotate the camera");
+    ImGui::BulletText("WASD: Hold RMB and Hold W/A/S/D to move the camera");
     ImGui::Separator();
     ImGui::SliderFloat("Zoom", &ui.camScaleZ, 0.5f, 30.0f);
+    ImGui::InputFloat("Camera Rotation Speed", &ui.mouseCameraRotationSpeed);
+    ImGui::InputFloat("Object Rotation Speed", &ui.mouseObjectRotationSpeed);
+    ImGui::InputFloat("Camera Movement Speed", &ui.cameraMovementSpeed);
+    ImGui::InputFloat("Object Movement Speed", &ui.objectMovementSpeed);
 
     if (ImGui::Button("Go Back"))
     {

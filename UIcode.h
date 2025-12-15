@@ -39,6 +39,10 @@ class UIState {
         bool modelLoaded  = false;
         bool loadFailed   = false;
         char status[256]  = "A model needs to be loaded";
+        float mouseObjectRotationSpeed = 0.003f;
+        float mouseCameraRotationSpeed = 0.004f;
+        float objectMovementSpeed = 10.0f;
+        float cameraMovementSpeed = 10.0f;
         bool cull = true;
         bool flip = false;
 };

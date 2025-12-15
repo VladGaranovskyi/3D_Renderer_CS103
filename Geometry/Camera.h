@@ -32,5 +32,9 @@ class Camera{
 
         // Change scale Z
         void Zoom(float incr);
+
+        // Forward and right vectors:
+        Vector3 GetForward() const;
+        Vector3 GetRight() const;
 };
 #endif

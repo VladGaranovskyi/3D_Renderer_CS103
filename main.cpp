@@ -71,12 +71,16 @@ int main(int argc, char** argv)
     const double freq = (double)SDL_GetPerformanceFrequency();
 
     model.BuildTriangles(renderer, camera);
+    bool isRecalculated = false, isLMBdown = false, isRMBdown = false;
+    int mouseDx = 0, mouseDy = 0;
 
     while (running)
     {
         Uint64 now = SDL_GetPerformanceCounter();
         double dt = (now - lastCounter) / freq;
         lastCounter = now;
+        mouseDx = 0;
+        mouseDy = 0;
 
         while (SDL_PollEvent(&e)) {
             ImGui_ImplSDL2_ProcessEvent(&e);
@@ -84,6 +88,29 @@ int main(int argc, char** argv)
             if (e.type == SDL_QUIT) running = false;
             if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
                 running = false;
+            
+            if (e.type == SDL_MOUSEBUTTONDOWN) {
+                if (e.button.button == SDL_BUTTON_LEFT) isLMBdown = true;
+                if (e.button.button == SDL_BUTTON_RIGHT) {
+                    isRMBdown = true;
+                    SDL_SetRelativeMouseMode(SDL_TRUE);
+                }
+            }
+
+            if (e.type == SDL_MOUSEBUTTONUP) {
+                if (e.button.button == SDL_BUTTON_LEFT) isLMBdown = false;
+                if (e.button.button == SDL_BUTTON_RIGHT) {
+                    isRMBdown = false;
+                    SDL_SetRelativeMouseMode(SDL_FALSE);
+                }
+            }
+
+            if (e.type == SDL_MOUSEMOTION) {
+                if (isLMBdown || isRMBdown) {
+                    mouseDx += e.motion.xrel;
+                    mouseDy += e.motion.yrel;
+                }
+            }
         }
 
         ImGui_ImplSDLRenderer2_NewFrame();
@@ -107,32 +134,54 @@ int main(int argc, char** argv)
             // Get keybord input
             const Uint8* keys = SDL_GetKeyboardState(nullptr);
 
-            // Rotate y 
-            if (keys[SDL_SCANCODE_LEFT])  {
-                model.transform.rotation.y -= (float)(yawSpeed * dt);
-                model.BuildTriangles(renderer, camera);
-            }
-            if (keys[SDL_SCANCODE_RIGHT]) {
-                model.transform.rotation.y += (float)(yawSpeed * dt);
-                model.BuildTriangles(renderer, camera);
+            if (isLMBdown) {
+                model.transform.rotation.y -= mouseDx * ui.mouseObjectRotationSpeed;
+                model.transform.rotation.x -= mouseDy * ui.mouseObjectRotationSpeed; 
+
+                isRecalculated = true;
             }
 
-            // Rotate x
-            if (keys[SDL_SCANCODE_UP])    {
-                model.transform.rotation.x -= (float)(yawSpeed * dt);
-                model.BuildTriangles(renderer, camera);
+            if (keys[SDL_SCANCODE_LEFT])  { model.transform.position.x -= ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
+            if (keys[SDL_SCANCODE_RIGHT]) { model.transform.position.x += ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
+            if (keys[SDL_SCANCODE_UP])    { model.transform.position.y += ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
+            if (keys[SDL_SCANCODE_DOWN])  { model.transform.position.y -= ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
+
+            if (keys[SDL_SCANCODE_KP_PLUS] || keys[SDL_SCANCODE_EQUALS]) { 
+                model.transform.position.z += ui.objectMovementSpeed * (float)dt;
+                isRecalculated = true;
             }
-            if (keys[SDL_SCANCODE_DOWN])  {
-                model.transform.rotation.x += (float)(yawSpeed * dt);
+            if (keys[SDL_SCANCODE_KP_MINUS] || keys[SDL_SCANCODE_MINUS]) {
+                model.transform.position.z -= ui.objectMovementSpeed * (float)dt;
+                isRecalculated = true;
+            }
+
+            if (isRMBdown) {
+                Vector3 move;
+
+                if (keys[SDL_SCANCODE_W]) move = move.AddVector(camera.GetForward());
+                if (keys[SDL_SCANCODE_S]) move = move.SubtractVector(camera.GetForward());
+                if (keys[SDL_SCANCODE_D]) move = move.AddVector(camera.GetRight());
+                if (keys[SDL_SCANCODE_A]) move = move.SubtractVector(camera.GetRight());
+
+                if (keys[SDL_SCANCODE_E]) move.y += 1.0f;
+                if (keys[SDL_SCANCODE_Q]) move.y -= 1.0f;
+
+                camera.position = camera.position.AddVector(
+                    move.MultiplyVector(ui.cameraMovementSpeed * (float)dt)
+                );
+
+                camera.rotation.y += mouseDx * ui.mouseCameraRotationSpeed;
+                camera.rotation.x += mouseDy * ui.mouseCameraRotationSpeed; 
+
+                isRecalculated = true;
+            }
+
+            if(isRecalculated){
                 model.BuildTriangles(renderer, camera);
             }
         }
 
-        
-        // rebuild triangles when viewing
-        if (mode == AppMode::Viewer) {
-            model.BuildTriangles(renderer, camera);
-        }
+    
 
         renderer.Clear();
 
@@ -155,3 +204,24 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
+// Tasks
+    /*
+    -Convert the console file upload into the UI with checkboxes and all that stuff
+    -ray cast and path finding(implement the selection of points)
+    -file upload (Saad)
+    */
+
+// Citations:
+/*
+https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
+https://wiki.libsdl.org/SDL2/CategoryRender
+https://en.wikipedia.org/wiki/Rotation_matrix
+https://www.youtube.com/watch?v=kdRJgYO1BJM
+https://learnopengl.com/Getting-Started/Coordinate-Systems
+https://github.com/ocornut/imgui?tab=readme-ov-file#getting-started--integration
+https://www.gabrielgambetta.com/computer-graphics-from-scratch/07-filled-triangles.html
+https://medium.com/nerd-for-tech/optimizing-3d-rendering-with-backface-culling-5430e0821e0a
+https://gamedev.stackexchange.com/questions/190054/how-to-calculate-the-forward-up-right-vectors-using-the-rotation-angles#190058
+
+*/

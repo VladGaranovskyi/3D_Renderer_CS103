@@ -77,3 +77,15 @@ void Camera::Zoom(float incr){
     scaleZ += incr;
     if (scaleZ < 0.1f) scaleZ = 0.1f;
 }
+
+Vector3 Camera::GetForward() const{
+    return Vector3(cos(rotation.x) * sin(rotation.y), 
+                    -sin(rotation.x),
+                    cos(rotation.x) * cos(rotation.y));
+}
+
+Vector3 Camera::GetRight() const{
+    return Vector3(cos(rotation.y), 
+                    0,
+                    -sin(rotation.y));
+}
