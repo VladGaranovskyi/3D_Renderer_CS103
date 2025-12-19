@@ -4,7 +4,20 @@
 
 using namespace std;
 
-static vector<int> InterpolateX(int y0, int x0, int y1, int x1)
+/*The following helper function (InterpolateX) was written with the aid of ChatGPT;
+  when prompted '(*uploaded the screenshot from the website with the algorithm of drawing triangles in pixels) can you make a code
+  for the InterpolateX method in the context of this webpage? Please give me only code and minimal explanation'
+  generated text:
+  Helper: Interpolate(y0,x0,y1,x1) → vector of x values
+
+    This returns an array x_values for each integer y between y0..y1 inclusive.
+
+    *The code is below*
+    
+  */
+
+// Helper to get all x values between 2 x coords
+vector<int> InterpolateX(int y0, int x0, int y1, int x1)
 {
     vector<int> listOfX;
 
@@ -13,9 +26,7 @@ static vector<int> InterpolateX(int y0, int x0, int y1, int x1)
         listOfX.push_back((int)round(x0));
         return listOfX;
     }
-
-    int dy = y1 - y0;
-    float dx = (float)(x1 - x0) / (float)dy;
+    float dx = (float)(x1 - x0) / (float)(y1 - y0);
 
     float x = (float)x0;
 
@@ -28,12 +39,13 @@ static vector<int> InterpolateX(int y0, int x0, int y1, int x1)
     return listOfX;
 }
 
-static void RemoveLastValue(vector<int>& v)
+void RemoveLastValue(vector<int>& v)
 {
     if (!v.empty()) v.pop_back();
 }
 
-static vector<int> ConcatVectors(const vector<int>& a, const vector<int>& b)
+// Basically merges vectors
+vector<int> ConcatVectors(const vector<int>& a, const vector<int>& b)
 {
     vector<int> out;
     out.reserve(a.size() + b.size());
@@ -98,12 +110,18 @@ void Model::BuildTriangles(MainRenderer& renderer, const Camera& camera){
         }
 
         ScreenTriangle s(screenPoint1, screenPoint2, screenPoint3);
+        
+        // Set the original local triangle index
         s.triangleIndex = i;
+
+        // If highlighted, set to true
         s.isHighlighted = i == mesh.highlightedTriangleIdx;
+
         mesh.screenTriangles.push_back(s);
     }
 }
 
+// Draw green edges
 void Model::DrawEdges(MainRenderer& renderer){
     renderer.SetColor(0, 255, 0);
     for(int i = 0; i < mesh.screenTriangles.size(); i++){
@@ -115,16 +133,23 @@ void Model::DrawEdges(MainRenderer& renderer){
         renderer.DrawLine(screenPoint3.x, screenPoint3.y, screenPoint1.x, screenPoint1.y);
     }
 }
+
+// Draw with faces
 void Model::DrawFilled(MainRenderer& renderer){
     for(int i = 0; i < mesh.screenTriangles.size(); i++){
-        if(mesh.screenTriangles[i].isHighlighted) renderer.SetColor(255, 0, 0);
+
+        // Highlight if needed
+        if(mesh.screenTriangles.at(i).isHighlighted) renderer.SetColor(255, 0, 0);
         else renderer.SetColor(0, 0, 255);
-        Vector2 screenPoint1 = mesh.screenTriangles[i].point1;
-        Vector2 screenPoint2 = mesh.screenTriangles[i].point2;
-        Vector2 screenPoint3 = mesh.screenTriangles[i].point3;
 
-        /*in constructor, screenTriangle automatically sorts them by y cord*/
+        // Get pixel coords
+        Vector2 screenPoint1 = mesh.screenTriangles.at(i).point1;
+        Vector2 screenPoint2 = mesh.screenTriangles.at(i).point2;
+        Vector2 screenPoint3 = mesh.screenTriangles.at(i).point3;
 
+        /*ScreenTriangle's constructor automatically sorts points by y coord*/
+
+        // Skip if it's a line
         if (screenPoint1.y == screenPoint3.y) continue;
         
         // Interpolation of all x coords between 2 points
@@ -136,14 +161,14 @@ void Model::DrawFilled(MainRenderer& renderer){
         RemoveLastValue(x12);
         vector<int> x123 = ConcatVectors(x12, x23);
 
-        // What is left and what is right
+        // Half the size
         int m = (int)(x123.size() / 2);
 
         const vector<int>* xLeft  = nullptr;
         const vector<int>* xRight = nullptr;
 
-        // Another check
-        if (m >= 0 && m < (int)x13.size() && m < (int)x123.size() && x13[m] < x123[m]) {
+        // Check what's right and left
+        if (m >= 0 && m < x13.size() && m < x123.size() && x13[m] < x123[m]) {
             xLeft  = &x13;
             xRight = &x123;
         } else {
@@ -155,14 +180,13 @@ void Model::DrawFilled(MainRenderer& renderer){
         for (int y = screenPoint1.y; y <= screenPoint3.y; y++)
         {
             int idx = y - screenPoint1.y;
+
+            // Check if not negative and for boundaries
             if (idx < 0) continue;
             if (idx >= (int)xLeft->size())  continue;
             if (idx >= (int)xRight->size()) continue;
 
-            int xStart = (*xLeft).at(idx);
-            int xEnd   = (*xRight).at(idx);
-
-            renderer.DrawHorizontalLine(xStart, xEnd, y);
+            renderer.DrawHorizontalLine(xLeft->at(idx), xRight->at(idx), y);
         }
     }
     DrawEdges(renderer);

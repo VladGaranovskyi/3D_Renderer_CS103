@@ -66,7 +66,6 @@ int main(int argc, char** argv)
     bool running = true;
     SDL_Event e;
 
-    float yawSpeed = 1.2f;
     Uint64 lastCounter = SDL_GetPerformanceCounter();
     const double freq = (double)SDL_GetPerformanceFrequency();
 
@@ -82,6 +81,7 @@ int main(int argc, char** argv)
         mouseDx = 0;
         mouseDy = 0;
 
+        // Events and input loop
         while (SDL_PollEvent(&e)) {
             ImGui_ImplSDL2_ProcessEvent(&e);
 
@@ -181,6 +181,7 @@ int main(int argc, char** argv)
             // Get keybord input
             const Uint8* keys = SDL_GetKeyboardState(nullptr);
 
+            // Object Rotation
             if (isLMBdown) {
                 model.transform.rotation.y -= mouseDx * ui.mouseObjectRotationSpeed;
                 model.transform.rotation.x -= mouseDy * ui.mouseObjectRotationSpeed; 
@@ -188,10 +189,23 @@ int main(int argc, char** argv)
                 isRecalculated = true;
             }
 
-            if (keys[SDL_SCANCODE_LEFT])  { model.transform.position.x -= ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
-            if (keys[SDL_SCANCODE_RIGHT]) { model.transform.position.x += ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
-            if (keys[SDL_SCANCODE_UP])    { model.transform.position.y += ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
-            if (keys[SDL_SCANCODE_DOWN])  { model.transform.position.y -= ui.objectMovementSpeed * (float)dt; isRecalculated = true; }
+            // Object Movement
+            if (keys[SDL_SCANCODE_LEFT]){ 
+                model.transform.position.x -= ui.objectMovementSpeed * (float)dt;
+                isRecalculated = true; 
+            }
+            if (keys[SDL_SCANCODE_RIGHT]){ 
+                model.transform.position.x += ui.objectMovementSpeed * (float)dt;
+                isRecalculated = true; 
+            }
+            if (keys[SDL_SCANCODE_UP]){ 
+                model.transform.position.y += ui.objectMovementSpeed * (float)dt; 
+                isRecalculated = true; 
+            }
+            if (keys[SDL_SCANCODE_DOWN]){ 
+                model.transform.position.y -= ui.objectMovementSpeed * (float)dt; 
+                isRecalculated = true; 
+            }
 
             if (keys[SDL_SCANCODE_KP_PLUS] || keys[SDL_SCANCODE_EQUALS]) { 
                 model.transform.position.z += ui.objectMovementSpeed * (float)dt;
@@ -202,6 +216,7 @@ int main(int argc, char** argv)
                 isRecalculated = true;
             }
 
+            // Camera rotation and movement
             if (isRMBdown) {
                 Vector3 move;
 
@@ -255,8 +270,6 @@ int main(int argc, char** argv)
 
 // Tasks
     /*
-    -Convert Rotation input to accept degrees, not radians
-    -Comments for code
     -Convert the console file upload into the UI with checkboxes and all that stuff
     -file upload (Saad)
     */
@@ -273,5 +286,6 @@ https://www.gabrielgambetta.com/computer-graphics-from-scratch/07-filled-triangl
 https://medium.com/nerd-for-tech/optimizing-3d-rendering-with-backface-culling-5430e0821e0a
 https://gamedev.stackexchange.com/questions/190054/how-to-calculate-the-forward-up-right-vectors-using-the-rotation-angles#190058
 https://www.baeldung.com/cs/check-if-point-is-in-2d-triangle
+https://www.geeksforgeeks.org/cpp/enumeration-in-cpp/
 
 */

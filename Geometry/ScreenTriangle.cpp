@@ -49,6 +49,7 @@ float ScreenTriangle::GetAverageDepth() const{
     return (z1+z2+z3)/3;
 }
 
+// 2D triangle area via determinant
 float ComputeArea(Vector2 p1, Vector2 p2, Vector2 p3){
     Vector2 AB = p2.SubtractVector(p1);
     Vector2 AC = p3.SubtractVector(p1);
@@ -57,6 +58,7 @@ float ComputeArea(Vector2 p1, Vector2 p2, Vector2 p3){
     return abs(crossProductArea) / 2.0f;
 }
 
+// Use Triangle area method from source
 bool ScreenTriangle::IsPointInTriangle(Vector2 screenPoint){
     float originalTriangleArea = ComputeArea(point1, point2, point3);
     float areaSum = 0;

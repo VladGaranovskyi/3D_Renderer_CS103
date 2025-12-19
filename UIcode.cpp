@@ -139,12 +139,15 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
 
 void DrawViewerAndInspectorSwitch(UIState& ui, AppMode& mode)
 {
-    int selectedMode = (mode == AppMode::Viewer) ? 0 : 1;
+    int selectedMode;
+    if(mode == AppMode::Viewer) selectedMode = 0;
+    else selectedMode = 1;
 
     ImGui::RadioButton("Viewer", &selectedMode, 0);
     ImGui::RadioButton("Inspector", &selectedMode, 1);
 
-    mode = (selectedMode == 0) ? AppMode::Viewer : AppMode::Inspector;
+    if(selectedMode == 0) mode = AppMode::Viewer;
+    else mode = AppMode::Inspector;
 }
 
 // UI for viewing the 3d object

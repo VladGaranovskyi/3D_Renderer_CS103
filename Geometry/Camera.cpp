@@ -9,13 +9,14 @@ Camera::Camera(int screenWidth, int screenHeight){
     this->scaleY = 0.0f;
 }
 
+// Convert World coords to relative to camera
 Vector3 Camera::WorldToCamera(const Vector3& worldPoint) const{
     Vector3 p = worldPoint;
     p = p.SubtractVector(position); // P.x - C.x
 
     float cosTheta, sinTheta, x, y, z;
 
-    // Inverse rotation
+    // Inverse rotation(so that the coords seem like xy looking from z axis)
     // Rz rotation
     cosTheta = cos(-rotation.z);
     sinTheta = sin(-rotation.z);
@@ -45,27 +46,35 @@ Vector3 Camera::WorldToCamera(const Vector3& worldPoint) const{
 
 Vector2 Camera::CameraToScreen(const Vector3& cameraPoint) const{
     Vector2 p;
+
+    // Skip if behind the camera
     if(cameraPoint.z <= 0){
         p.x = -1;
         p.y = -1;
         return p;
     }
 
+    // Use formula from wikipedia
     p.x = (cameraPoint.x * scaleZ / cameraPoint.z) + scaleX;
     p.y = (cameraPoint.y * scaleZ / cameraPoint.z) + scaleY;
 
     return p;
 }
 
+
+// Wrapper method for Getting pixel coords for Model.BuildTriangles
 Vector3 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
     Vector3 p3 = WorldToCamera(worldPoint);
     Vector2 screenPoint;
     
     screenPoint = CameraToScreen(p3);
+
+    // If behind the camera
     if(screenPoint.x == -1 && screenPoint.y == -1){
         return Vector3(-1, -1, 0);
     }
 
+    // Make scale fixed if aspect ratio changes
     float universalScale = 0.2f;
 
     if(screenHeight < screenWidth){
@@ -75,6 +84,7 @@ Vector3 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
         universalScale *= screenWidth;
     }
 
+    // Use Formula from Wikipedia
     screenPoint.x = screenWidth * 0.5f + screenPoint.x * universalScale;
     screenPoint.y = screenHeight * 0.5f - screenPoint.y * universalScale;
     
@@ -87,12 +97,14 @@ void Camera::Zoom(float incr){
     if (scaleZ < 0.1f) scaleZ = 0.1f;
 }
 
+// Get Vector looking forward for translational motion of the camera
 Vector3 Camera::GetForward() const{
     return Vector3(cos(rotation.x) * sin(rotation.y), 
                     -sin(rotation.x),
                     cos(rotation.x) * cos(rotation.y));
 }
 
+// Same as above but right side
 Vector3 Camera::GetRight() const{
     return Vector3(cos(rotation.y), 
                     0,
