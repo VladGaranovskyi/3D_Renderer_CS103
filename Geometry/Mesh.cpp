@@ -32,3 +32,20 @@ void Mesh::ComputeMeshCenter(){
     }
     meshCenter = center.MultiplyVector(1.0f / vertices.size());
 }
+
+void Mesh::HighlightTriangle(Vector2 screenPoint){
+    int bestMatchIdx = -1;
+    float bestZDepth = 1000000000;
+    for(int i = 0; i < screenTriangles.size(); i++){
+        ScreenTriangle t = screenTriangles.at(i);
+        if(t.IsPointInTriangle(screenPoint)){
+            float z = t.GetAverageDepth();
+            if(z < bestZDepth){
+                bestZDepth = z;
+                bestMatchIdx = t.triangleIndex;
+            }
+        }
+    }
+
+    highlightedTriangleIdx = bestMatchIdx;
+}

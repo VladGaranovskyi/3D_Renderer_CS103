@@ -1,4 +1,5 @@
 #include "ScreenTriangle.h"
+#include <cmath>
 
 ScreenTriangle::ScreenTriangle(){
     point1 = Vector2(0, 0);
@@ -42,4 +43,27 @@ ScreenTriangle::ScreenTriangle(Vector3 p1, Vector3 p2, Vector3 p3){
         point2 = point3;
         point3 = tempV;
     }
+}
+
+float ScreenTriangle::GetAverageDepth() const{
+    return (z1+z2+z3)/3;
+}
+
+float ComputeArea(Vector2 p1, Vector2 p2, Vector2 p3){
+    Vector2 AB = p2.SubtractVector(p1);
+    Vector2 AC = p3.SubtractVector(p1);
+    float crossProductArea = AB.x * AC.y - AB.y * AC.x;
+
+    return abs(crossProductArea) / 2.0f;
+}
+
+bool ScreenTriangle::IsPointInTriangle(Vector2 screenPoint){
+    float originalTriangleArea = ComputeArea(point1, point2, point3);
+    float areaSum = 0;
+
+    areaSum += ComputeArea(screenPoint, point2, point3);
+    areaSum += ComputeArea(point1, screenPoint, point3);
+    areaSum += ComputeArea(point1, point2, screenPoint);
+
+    return abs(originalTriangleArea - areaSum) < 0.1f;
 }

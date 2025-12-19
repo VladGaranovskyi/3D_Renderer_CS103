@@ -71,8 +71,8 @@ int main(int argc, char** argv)
     const double freq = (double)SDL_GetPerformanceFrequency();
 
     model.BuildTriangles(renderer, camera);
-    bool isRecalculated = false, isLMBdown = false, isRMBdown = false;
-    int mouseDx = 0, mouseDy = 0;
+    bool isRecalculated = false, isLMBdown = false, isRMBdown = false, isLMBclicked = false;
+    int mouseDx = 0, mouseDy = 0, mouseXPos = 0, mouseYPos = 0;
 
     while (running)
     {
@@ -90,7 +90,10 @@ int main(int argc, char** argv)
                 running = false;
             
             if (e.type == SDL_MOUSEBUTTONDOWN) {
-                if (e.button.button == SDL_BUTTON_LEFT) isLMBdown = true;
+                if (e.button.button == SDL_BUTTON_LEFT) {
+                    isLMBdown = true;
+                    isLMBclicked = true;
+                }
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     isRMBdown = true;
                     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -98,7 +101,10 @@ int main(int argc, char** argv)
             }
 
             if (e.type == SDL_MOUSEBUTTONUP) {
-                if (e.button.button == SDL_BUTTON_LEFT) isLMBdown = false;
+                if (e.button.button == SDL_BUTTON_LEFT) {
+                    isLMBdown = false;
+                    isLMBclicked = false;
+                }
                 if (e.button.button == SDL_BUTTON_RIGHT) {
                     isRMBdown = false;
                     SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -106,9 +112,27 @@ int main(int argc, char** argv)
             }
 
             if (e.type == SDL_MOUSEMOTION) {
+                mouseXPos = e.motion.x;
+                mouseYPos = e.motion.y;
                 if (isLMBdown || isRMBdown) {
                     mouseDx += e.motion.xrel;
                     mouseDy += e.motion.yrel;
+                }
+            }
+
+            if (e.type == SDL_WINDOWEVENT)
+{
+                if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
+                {
+                    int newW = e.window.data1;
+                    int newH = e.window.data2;
+
+                    renderer.Resize(newW, newH);     
+                    camera.screenWidth = newW;
+                    camera.screenHeight = newH;
+
+
+                    model.BuildTriangles(renderer, camera);
                 }
             }
         }
@@ -121,9 +145,32 @@ int main(int argc, char** argv)
         {
             DrawSettingsUI(ui, mode, model, camera);
         }
+        else if(mode == AppMode::Inspector){
+            DrawInspectorUI(ui, mode, model, camera);
+
+            if(isLMBclicked){
+                model.mesh.HighlightTriangle(Vector2(mouseXPos, mouseYPos));
+                isLMBclicked = false;
+                isRecalculated = true;
+            }
+
+            if (isRMBdown) {
+                model.transform.rotation.y -= mouseDx * ui.mouseObjectRotationSpeed;
+                model.transform.rotation.x -= mouseDy * ui.mouseObjectRotationSpeed; 
+
+                isRecalculated = true;
+            }
+
+            if(isRecalculated){
+                model.BuildTriangles(renderer, camera);
+                isRecalculated = false;
+            }
+        }
         else
         {
             DrawViewerUI(ui, mode);
+
+            model.mesh.highlightedTriangleIdx = -1;
 
             // Apply zoom slider's value
             if(abs(camera.scaleZ - ui.camScaleZ) > 0.01f){
@@ -178,6 +225,7 @@ int main(int argc, char** argv)
 
             if(isRecalculated){
                 model.BuildTriangles(renderer, camera);
+                isRecalculated = false;
             }
         }
 
@@ -185,7 +233,7 @@ int main(int argc, char** argv)
 
         renderer.Clear();
 
-        if (mode == AppMode::Viewer) {
+        if (mode != AppMode::Settings) {
             model.DrawFilled(renderer);
         }
 
@@ -207,8 +255,9 @@ int main(int argc, char** argv)
 
 // Tasks
     /*
+    -Convert Rotation input to accept degrees, not radians
+    -Comments for code
     -Convert the console file upload into the UI with checkboxes and all that stuff
-    -ray cast and path finding(implement the selection of points)
     -file upload (Saad)
     */
 
@@ -223,5 +272,6 @@ https://github.com/ocornut/imgui?tab=readme-ov-file#getting-started--integration
 https://www.gabrielgambetta.com/computer-graphics-from-scratch/07-filled-triangles.html
 https://medium.com/nerd-for-tech/optimizing-3d-rendering-with-backface-culling-5430e0821e0a
 https://gamedev.stackexchange.com/questions/190054/how-to-calculate-the-forward-up-right-vectors-using-the-rotation-angles#190058
+https://www.baeldung.com/cs/check-if-point-is-in-2d-triangle
 
 */

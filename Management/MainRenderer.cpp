@@ -3,7 +3,7 @@
 
 MainRenderer::MainRenderer(int w, int h): window(nullptr), renderer(nullptr), width(w), height(h) {
 	SDL_Init(SDL_INIT_VIDEO);
-	window = SDL_CreateWindow("Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	renderer = SDL_CreateRenderer(window, -1, 0);
 }
 MainRenderer::~MainRenderer() {
@@ -40,5 +40,11 @@ void MainRenderer::DrawHorizontalLine(int x1, int x2, int y) {
 	for (int x = x1; x <= x2; x++) {
 		SDL_RenderDrawPoint(renderer, x, y);
 	}
+}
+
+void MainRenderer::Resize(int w, int h){
+	width = w;
+	height = h;
+	SDL_RenderSetLogicalSize(renderer, width, height);
 }
 

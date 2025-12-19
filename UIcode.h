@@ -20,7 +20,8 @@ Mesh MakeCubeMesh();
 
 enum class AppMode {
     Settings,
-    Viewer
+    Viewer,
+    Inspector
 };
 
 
@@ -51,6 +52,7 @@ void ApplyUIToScene(const UIState& ui, Model& model, Camera& camera);
 bool LoadMeshStub(const char* path, Mesh& outMesh);
 void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera);
 void DrawViewerUI(UIState& ui, AppMode& mode);
+void DrawInspectorUI(UIState& ui, AppMode& mode, Model& model, Camera& camera);
 
 
 #endif

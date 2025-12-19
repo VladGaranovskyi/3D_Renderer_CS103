@@ -137,15 +137,26 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
     ImGui::End();
 }
 
+void DrawViewerAndInspectorSwitch(UIState& ui, AppMode& mode)
+{
+    int selectedMode = (mode == AppMode::Viewer) ? 0 : 1;
+
+    ImGui::RadioButton("Viewer", &selectedMode, 0);
+    ImGui::RadioButton("Inspector", &selectedMode, 1);
+
+    mode = (selectedMode == 0) ? AppMode::Viewer : AppMode::Inspector;
+}
+
 // UI for viewing the 3d object
 void DrawViewerUI(UIState& ui, AppMode& mode)
 {
     ImGui::Begin("Viewer");
+    DrawViewerAndInspectorSwitch(ui, mode);
     ImGui::Text("Controls:");
     ImGui::BulletText("Arrows: Move the object in xy plane");
     ImGui::BulletText("+/-: Move the object on the z-axis");
     ImGui::BulletText("Left Mouse Button: Hold LMB and move the mouse to rotate the object");
-    ImGui::BulletText("Right Mous Button: Hold RMB and move the mouse to rotate the camera");
+    ImGui::BulletText("Right Mouse Button: Hold RMB and move the mouse to rotate the camera");
     ImGui::BulletText("WASD: Hold RMB and Hold W/A/S/D to move the camera");
     ImGui::Separator();
     ImGui::SliderFloat("Zoom", &ui.camScaleZ, 0.5f, 30.0f);
@@ -158,6 +169,57 @@ void DrawViewerUI(UIState& ui, AppMode& mode)
     {
         mode = AppMode::Settings;
     }
+
+    ImGui::End();
+}
+
+void DrawInspectorUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
+{
+    ImGui::Begin("Inspector");
+    DrawViewerAndInspectorSwitch(ui, mode);
+    ImGui::Text("Controls:");
+    ImGui::BulletText("Left Mouse Button: Touch the triangle you want to inspect");
+    ImGui::BulletText("Right Mouse Button: Hold RMB and move the mouse to rotate the object");
+    ImGui::Separator();
+
+    ImGui::BeginDisabled(); 
+    float position[3] = {model.transform.position.x, model.transform.position.y, model.transform.position.z};
+    float rotation[3] = {model.transform.rotation.x, model.transform.rotation.y, model.transform.rotation.z};
+    ImGui::InputFloat3("Transform Position", position, "%.3f");
+    ImGui::InputFloat3("Transform Rotation", rotation, "%.3f");
+
+    Vector3* verticesCoords = model.GetHighlightedVerticesWorld();
+    if(verticesCoords != nullptr){
+        float vertex1[3] = {verticesCoords[0].x, verticesCoords[0].y, verticesCoords[0].z};
+        float vertex2[3] = {verticesCoords[1].x, verticesCoords[1].y, verticesCoords[1].z};
+        float vertex3[3] = {verticesCoords[2].x, verticesCoords[2].y, verticesCoords[2].z};
+
+        Vector3 normal = model.GetHighlightedNormal(verticesCoords);
+        float normalFloat[3] = {normal.x, normal.y, normal.z};
+
+        float* zDepths = model.GetHighlightedDepth(verticesCoords, camera);
+
+        ImGui::InputInt("Triangle Index", &model.mesh.highlightedTriangleIdx);
+
+        ImGui::InputFloat3("Vertex 1", vertex1, "%.3f");
+        ImGui::InputFloat("Z Depth 1", &zDepths[0]);
+        ImGui::InputFloat3("Vertex 2", vertex2, "%.3f");
+        ImGui::InputFloat("Z Depth 1", &zDepths[1]);
+        ImGui::InputFloat3("Vertex 3", vertex3, "%.3f");
+        ImGui::InputFloat("Z Depth 1", &zDepths[2]);
+
+        ImGui::InputFloat3("Normal", normalFloat, "%.3f");
+
+        delete[] zDepths;
+    }
+    ImGui::EndDisabled();
+
+    if (ImGui::Button("Go Back"))
+    {
+        mode = AppMode::Settings;
+    }
+
+    delete[] verticesCoords;
 
     ImGui::End();
 }

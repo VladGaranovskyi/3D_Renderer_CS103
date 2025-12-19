@@ -66,8 +66,17 @@ Vector3 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
         return Vector3(-1, -1, 0);
     }
 
-    screenPoint.x = screenWidth * 0.5f + screenPoint.x * screenWidth * 0.2f;
-    screenPoint.y = screenHeight * 0.5f - screenPoint.y * screenHeight * 0.2f;
+    float universalScale = 0.2f;
+
+    if(screenHeight < screenWidth){
+        universalScale *= screenHeight;
+    }
+    else{
+        universalScale *= screenWidth;
+    }
+
+    screenPoint.x = screenWidth * 0.5f + screenPoint.x * universalScale;
+    screenPoint.y = screenHeight * 0.5f - screenPoint.y * universalScale;
     
 
     return Vector3(screenPoint.x, screenPoint.y, p3.z);

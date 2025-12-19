@@ -98,6 +98,8 @@ void Model::BuildTriangles(MainRenderer& renderer, const Camera& camera){
         }
 
         ScreenTriangle s(screenPoint1, screenPoint2, screenPoint3);
+        s.triangleIndex = i;
+        s.isHighlighted = i == mesh.highlightedTriangleIdx;
         mesh.screenTriangles.push_back(s);
     }
 }
@@ -114,8 +116,9 @@ void Model::DrawEdges(MainRenderer& renderer){
     }
 }
 void Model::DrawFilled(MainRenderer& renderer){
-    renderer.SetColor(0, 0, 255);
     for(int i = 0; i < mesh.screenTriangles.size(); i++){
+        if(mesh.screenTriangles[i].isHighlighted) renderer.SetColor(255, 0, 0);
+        else renderer.SetColor(0, 0, 255);
         Vector2 screenPoint1 = mesh.screenTriangles[i].point1;
         Vector2 screenPoint2 = mesh.screenTriangles[i].point2;
         Vector2 screenPoint3 = mesh.screenTriangles[i].point3;
@@ -163,4 +166,40 @@ void Model::DrawFilled(MainRenderer& renderer){
         }
     }
     DrawEdges(renderer);
+}
+
+Vector3* Model::GetHighlightedVerticesWorld(){
+    if(mesh.highlightedTriangleIdx == -1){
+        return nullptr;
+    }
+
+    Vector3* out = new Vector3[3];
+    out[0] = transform.LocalToWorld(mesh.vertices.at(mesh.triangles.at(mesh.highlightedTriangleIdx).point1));
+    out[1] = transform.LocalToWorld(mesh.vertices.at(mesh.triangles.at(mesh.highlightedTriangleIdx).point2));
+    out[2] = transform.LocalToWorld(mesh.vertices.at(mesh.triangles.at(mesh.highlightedTriangleIdx).point3));
+
+    return out;
+}
+
+Vector3 Model::GetHighlightedNormal(Vector3* verticesWorld){
+    if(verticesWorld == nullptr){
+        return Vector3();
+    }
+
+    Vector3 AB = verticesWorld[1].SubtractVector(verticesWorld[0]);
+    Vector3 AC = verticesWorld[2].SubtractVector(verticesWorld[0]);
+    return AB.CrossVector(AC).GetNormalized();
+}
+
+float* Model::GetHighlightedDepth(Vector3* verticesWorld, Camera& camera){
+    if(mesh.highlightedTriangleIdx == -1){
+        return nullptr;
+    }
+
+    float* out = new float[3];
+    out[0] = camera.WorldToCamera(verticesWorld[0]).z;
+    out[1] = camera.WorldToCamera(verticesWorld[1]).z;
+    out[2] = camera.WorldToCamera(verticesWorld[2]).z;
+
+    return out;
 }

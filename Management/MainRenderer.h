@@ -23,6 +23,8 @@ public:
         return height; 
     }
 
+    void Resize(int w, int h);
+
     SDL_Window* GetWindow() const{
         return window;
     }
