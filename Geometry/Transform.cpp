@@ -4,6 +4,7 @@
 Transform::Transform(): position(), rotation(), scale(1.0f) {}
 Transform::Transform(const Vector3& p, const Vector3& r, float s): position(p), rotation(r), scale(s) {}
 Vector3 Transform::LocalToWorld(const Vector3& localPoint) const {
+    // 1) Scale
     Vector3 p = localPoint.MultiplyVector(scale);
     float cx = std::cos(rotation.x);
     float sx = std::sin(rotation.x);
