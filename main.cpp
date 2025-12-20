@@ -294,6 +294,4 @@ https://gamedev.stackexchange.com/questions/190054/how-to-calculate-the-forward-
 https://www.baeldung.com/cs/check-if-point-is-in-2d-triangle
 https://www.geeksforgeeks.org/cpp/enumeration-in-cpp/
 
-https://www.geeksforgeeks.org/cpp/enumeration-in-cpp/
-
 */

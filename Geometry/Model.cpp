@@ -90,10 +90,10 @@ void Model::BuildTriangles(MainRenderer& renderer, const Camera& camera){
             Vector3 triangleNormal = v12.CrossVector(v13);
             float dot = triangleNormal.DotVector(camera.position);
             if(isFlip){
-                if (dot <= 0) continue;
+                if (dot >= 0) continue;
             }
             else{
-                if (dot >= 0) continue;
+                if (dot <= 0) continue;
             }
         }
         
