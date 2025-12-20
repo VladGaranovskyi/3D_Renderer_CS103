@@ -39,6 +39,7 @@ class UIState {
 
         bool modelLoaded  = false;
         bool loadFailed   = false;
+        bool requestRebuild = false; // set true when a new mesh is loaded
         char status[256]  = "A model needs to be loaded";
         float mouseObjectRotationSpeed = 0.003f;
         float mouseCameraRotationSpeed = 0.004f;
