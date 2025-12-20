@@ -4,78 +4,62 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem>
 
 using namespace std;
 
+// NOTE:
+// The UI now supports typing an .obj path directly (ImGui "Load" button).
+// This function remains for compatibility, but MUST NOT destroy/truncate files.
 string chooseOBJ() {
-    int choice;
+    // Default to a safe built-in model; let the ImGui UI load anything else.
+    return "Objects/monkey.obj";
+}
 
-    cout << "Choose an option:" << endl;
-    cout << "1. Use existing object" << endl;
-    cout << "2. Upload new .obj file" << endl;
-    cout << "Enter choice: ";
-    cin >> choice;
+// Safe copy helper (used if you still want to keep console "upload" in the future)
+static bool CopyObjSafelyIntoObjects(const std::string& sourcePath, std::string& outDestinationPath)
+{
+    namespace fs = std::filesystem;
 
-    if (choice == 1) {
-        int objChoice;
+    try {
+        fs::path src(sourcePath);
+        if (!fs::exists(src)) return false;
 
-        cout << "Choose an object:" << endl;
-        cout << "1. cube.obj" << endl;
-        cout << "2. triangle.obj" << endl;
-        cout << "3. square.obj" << endl;
-        cout << "4. rectangle.obj" << endl;
-        cout << "Enter choice: ";
-        cin >> objChoice;
+        fs::path dest = fs::path("Objects") / src.filename();
+        outDestinationPath = dest.string();
 
-        if (objChoice == 1) return "Objects/cube.obj";
-        if (objChoice == 2) return "Objects/triangle.obj";
-        if (objChoice == 3) return "Objects/square.obj";
-        if (objChoice == 4) return "Objects/rectangle.obj";
+        // If source and destination are actually the same file, do nothing.
+        if (fs::exists(dest))
+        {
+            std::error_code ec;
+            if (fs::equivalent(src, dest, ec) && !ec)
+            {
+                return true;
+            }
 
-        cout << "Invalid choice" << endl;
-        return "";
+            // Create a simple backup next to destination before overwriting.
+            fs::path backup = dest.parent_path() / (dest.stem().string() + "_backup" + dest.extension().string());
+            if (!fs::exists(backup))
+            {
+                fs::copy_file(dest, backup, fs::copy_options::overwrite_existing);
+            }
+        }
+
+        // Read source fully before writing dest (prevents truncation issues).
+        std::ifstream in(src, std::ios::binary);
+        if (!in.is_open()) return false;
+        std::string bytes((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+        in.close();
+
+        std::ofstream out(dest, std::ios::binary | std::ios::trunc);
+        if (!out.is_open()) return false;
+        out.write(bytes.data(), (std::streamsize)bytes.size());
+        out.close();
+
+        return true;
+    } catch (...) {
+        return false;
     }
-
-    if (choice == 2) {
-        string sourcePath;
-        string fileName;
-        string destinationPath;
-
-        cout << "Enter full path to .obj file: ";
-        cin >> sourcePath;
-
-        int i = sourcePath.length() - 1;
-
-        while (i >= 0 && sourcePath[i] != '/' && sourcePath[i] != '\\') {
-            i--;
-        }
-
-        fileName = sourcePath.substr(i + 1);
-        destinationPath = "Objects/" + fileName;
-
-        ifstream sourceFile(sourcePath);
-        ofstream destFile(destinationPath);
-
-        if (!sourceFile.is_open()) {
-            cout << "Could not open file" << endl;
-            return "";
-        }
-
-        string line;
-        while (getline(sourceFile, line)) {
-            destFile << line << endl;
-        }
-
-        sourceFile.close();
-        destFile.close();
-
-        cout << "File copied to Objects folder" << endl;
-
-        return destinationPath;
-    }
-
-    cout << "Invalid option" << endl;
-    return "";
 }
 
 #endif

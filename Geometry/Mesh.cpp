@@ -28,7 +28,6 @@ void Mesh::ComputeMeshCenter(){
         meshCenter = center;
         return;
     }
-    
     // Sum all xyz coords to get average after
     for(int i = 0; i < vertices.size(); i++){
         center.x += vertices.at(i).x;
@@ -44,11 +43,9 @@ void Mesh::HighlightTriangle(Vector2 screenPoint){
     float bestZDepth = 1000000000;
     for(int i = 0; i < screenTriangles.size(); i++){
         ScreenTriangle t = screenTriangles.at(i);
-
         // check every ScreenTriangle
         if(t.IsPointInTriangle(screenPoint)){
             float z = t.GetAverageDepth();
-
             // The least depth is the closest to the camera
             if(z < bestZDepth){
                 bestZDepth = z;

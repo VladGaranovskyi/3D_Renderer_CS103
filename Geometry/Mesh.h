@@ -14,7 +14,6 @@ class Mesh{
 
         std::vector<Vector3> vertices;
         std::vector<Triangle> triangles;
-
         // List of triangles in pixel coordinates
         std::vector<ScreenTriangle> screenTriangles;
         int highlightedTriangleIdx = -1; 
@@ -23,7 +22,6 @@ class Mesh{
         Mesh(std::vector<Vector3> v, std::vector<Triangle> t);
 
         void ComputeMeshCenter();
-
         // Finds the best matching triangle when user in inspector mode clicks LMB
         void HighlightTriangle(Vector2 screenPoint);
 };

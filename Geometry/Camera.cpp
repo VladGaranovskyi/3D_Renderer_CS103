@@ -46,7 +46,6 @@ Vector3 Camera::WorldToCamera(const Vector3& worldPoint) const{
 
 Vector2 Camera::CameraToScreen(const Vector3& cameraPoint) const{
     Vector2 p;
-
     // Skip if behind the camera
     if(cameraPoint.z <= 0){
         p.x = -1;
@@ -61,14 +60,12 @@ Vector2 Camera::CameraToScreen(const Vector3& cameraPoint) const{
     return p;
 }
 
-
 // Wrapper method for Getting pixel coords for Model.BuildTriangles
 Vector3 Camera::ProjectOnScreen(const Vector3& worldPoint) const{
     Vector3 p3 = WorldToCamera(worldPoint);
     Vector2 screenPoint;
     
     screenPoint = CameraToScreen(p3);
-
     // If behind the camera
     if(screenPoint.x == -1 && screenPoint.y == -1){
         return Vector3(-1, -1, 0);

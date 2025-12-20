@@ -1,5 +1,53 @@
 #include "UIcode.h"
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <windows.h>
+#include <commdlg.h>
+#endif
+
+#include <string>
+
+static bool OpenObjFileDialog(std::string& outPath)
+{
+#ifdef _WIN32
+    wchar_t fileName[MAX_PATH] = L"";
+
+    OPENFILENAMEW ofn;
+    ZeroMemory(&ofn, sizeof(ofn));
+
+    ofn.lStructSize = sizeof(ofn);
+    // Important: give the dialog an owner so it doesn't pop behind / focus the console window.
+    ofn.hwndOwner = GetForegroundWindow();
+    ofn.lpstrFile = fileName;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFilter = L"OBJ Files (*.obj)\0*.obj\0All Files (*.*)\0*.*\0";
+    ofn.nFilterIndex = 1;
+    ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+
+    if (GetOpenFileNameW(&ofn))
+    {
+        int sizeNeeded = WideCharToMultiByte(CP_UTF8, 0, fileName, -1, nullptr, 0, nullptr, nullptr);
+        if (sizeNeeded <= 1) return false;
+
+        std::string utf8;
+        utf8.resize((size_t)sizeNeeded - 1);
+        WideCharToMultiByte(CP_UTF8, 0, fileName, -1, utf8.data(), sizeNeeded, nullptr, nullptr);
+
+        outPath = utf8;
+        return true;
+    }
+#endif
+
+    (void)outPath;
+    return false;
+}
+
 Mesh MakeCubeMesh()
 {
     Mesh mesh;
@@ -71,18 +119,53 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
     ImGui::Separator();
 
     ImGui::InputText(".Obj file path", ui.objFilePath, IM_ARRAYSIZE(ui.objFilePath));
+
+    // Put buttons on the next line so they don't get clipped in a narrow Setup window.
+    if (ImGui::Button("Browse..."))
+    {
+        std::string chosen;
+        if (OpenObjFileDialog(chosen))
+        {
+            if (chosen.size() < IM_ARRAYSIZE(ui.objFilePath))
+            {
+                strcpy(ui.objFilePath, chosen.c_str());
+            }
+            else
+            {
+                ui.loadFailed = true;
+                strcpy(ui.status, "Selected path is too long");
+            }
+        }
+    }
     ImGui::SameLine();
     if (ImGui::Button("Load"))
     {
         Mesh loaded;
         ui.loadFailed = false;
 
-        bool ok = LoadMeshStub(ui.objFilePath, loaded);
+        // Minimal "upload" behavior:
+        // If the user typed a path outside Objects/, copy it safely into Objects/ first,
+        // then load from the copied path.
+        std::string pathToLoad = ui.objFilePath;
+        std::string preparedPath;
+        if (PrepareObjPathForLoading(pathToLoad, preparedPath))
+        {
+            pathToLoad = preparedPath;
+            // Keep the UI text in sync with what we're actually loading.
+            if (pathToLoad.size() < IM_ARRAYSIZE(ui.objFilePath))
+            {
+                strcpy(ui.objFilePath, pathToLoad.c_str());
+            }
+        }
+
+        bool ok = LoadMeshStub(pathToLoad.c_str(), loaded);
 
         if (ok && !loaded.vertices.empty())
         {
             model.mesh = loaded;
             ui.modelLoaded = true;
+            // DO NOT rebuild triangles here: transforms may not be applied yet.
+            // We'll rebuild when the user clicks "Start Viewer" (after ApplyUIToScene).
             strcpy(ui.status, "Model loaded successfully");
         }
         else
@@ -130,6 +213,7 @@ void DrawSettingsUI(UIState& ui, AppMode& mode, Model& model, Camera& camera)
     if (ImGui::Button("Start Viewer"))
     {
         ApplyUIToScene(ui, model, camera);
+        ui.requestRebuild = true;
         mode = AppMode::Viewer;
     }
     if (!ui.modelLoaded) ImGui::EndDisabled();

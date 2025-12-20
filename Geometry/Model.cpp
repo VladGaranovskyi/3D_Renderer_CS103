@@ -4,20 +4,21 @@
 
 using namespace std;
 
-/*The following helper function (InterpolateX) was written with the aid of ChatGPT;
-  when prompted '(*uploaded the screenshot from the website with the algorithm of drawing triangles in pixels) can you make a code
-  for the InterpolateX method in the context of this webpage? Please give me only code and minimal explanation'
-  generated text:
-  Helper: Interpolate(y0,x0,y1,x1) → vector of x values
+/*The following helper function (InterpolateX) was written with the aid of ChatGPT;  
+  when prompted '(*uploaded the screenshot from the website with the algorithm of dra
+wing triangles in pixels) can you make a c                                           ode
+  for the InterpolateX method in the context of this webpage? Please give me only cod
+e and minimal explanation'                                                             generated text:
+  Helper: Interpolate(y0,x0,y1,x1) ΓåÆ vector of x values
 
-    This returns an array x_values for each integer y between y0..y1 inclusive.
+    This returns an array x_values for each integer y between y0..y1 inclusive.      
 
     *The code is below*
-    
+
   */
 
 // Helper to get all x values between 2 x coords
-vector<int> InterpolateX(int y0, int x0, int y1, int x1)
+static vector<int> InterpolateX(int y0, int x0, int y1, int x1)
 {
     vector<int> listOfX;
 

@@ -5,7 +5,13 @@
             "label": "build",
             "type": "shell",
             "command": "C:/msys64/mingw64/bin/g++.exe",
+            "options": {
+                "env": {
+                    "PATH": "C:/msys64/mingw64/bin;${env:PATH}"
+                }
+            },
             "args": [
+                "-std=c++17",
                 "main.cpp",
                 "UIcode.cpp",
                 "Geometry/Camera.cpp",
@@ -34,6 +40,7 @@
                 "-lmingw32",
                 "-lSDL2main",
                 "-lSDL2",
+                "-lcomdlg32",
                 "-o",
                 "app.exe"
             ],
