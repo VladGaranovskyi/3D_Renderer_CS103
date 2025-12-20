@@ -2,10 +2,15 @@
 #include <cmath>
 
 Transform::Transform(): position(), rotation(), scale(1.0f) {}
+
 Transform::Transform(const Vector3& p, const Vector3& r, float s): position(p), rotation(r), scale(s) {}
+
+// Transform local coords to world
 Vector3 Transform::LocalToWorld(const Vector3& localPoint) const {
     // 1) Scale
     Vector3 p = localPoint.MultiplyVector(scale);
+
+    // 2) Rotate
     float cx = std::cos(rotation.x);
     float sx = std::sin(rotation.x);
     float cy = std::cos(rotation.y);
@@ -25,6 +30,8 @@ Vector3 Transform::LocalToWorld(const Vector3& localPoint) const {
     nx = x * cz - y * sz;
     ny = x * sz + y * cz;
     x = nx; y = ny;
+
+    // 3) Translate
     x += position.x;
     y += position.y;
     z += position.z;
@@ -33,8 +40,10 @@ Vector3 Transform::LocalToWorld(const Vector3& localPoint) const {
 
 Vector3 Transform::LocalToWorld(const Vector3* localPoint, const Vector3& center) const {
     Vector3 relative = localPoint->SubtractVector(center);
+    // 1) Scale
     Vector3 scaled = relative.MultiplyVector(scale);
     
+    // Trigonometry
     float cx = std::cos(rotation.x);
     float sx = std::sin(rotation.x);
     float cy = std::cos(rotation.y);
@@ -46,6 +55,7 @@ Vector3 Transform::LocalToWorld(const Vector3* localPoint, const Vector3& center
     float y = scaled.y;
     float z = scaled.z;
     
+    // 2) Rotate
     // rotate x
     float nx = x;
     float ny = y * cx - z * sx;
@@ -62,6 +72,7 @@ Vector3 Transform::LocalToWorld(const Vector3* localPoint, const Vector3& center
     ny = x * sz + y * cz;
     x = nx; y = ny;
     
+    // 3) Translate
     x += position.x + center.x;
     y += position.y + center.y;
     z += position.z + center.z;

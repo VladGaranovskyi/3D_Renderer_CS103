@@ -11,6 +11,7 @@ class Mesh{
     public:
         // Local center
         Vector3 meshCenter;
+
         std::vector<Vector3> vertices;
         std::vector<Triangle> triangles;
         // List of triangles in pixel coordinates
