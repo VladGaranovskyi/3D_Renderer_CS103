@@ -4,6 +4,20 @@
 
 using namespace std;
 
+/*The following helper function (InterpolateX) was written with the aid of ChatGPT;  
+  when prompted '(*uploaded the screenshot from the website with the algorithm of dra
+wing triangles in pixels) can you make a c                                           ode
+  for the InterpolateX method in the context of this webpage? Please give me only cod
+e and minimal explanation'                                                             generated text:
+  Helper: Interpolate(y0,x0,y1,x1) ΓåÆ vector of x values
+
+    This returns an array x_values for each integer y between y0..y1 inclusive.      
+
+    *The code is below*
+
+  */
+
+// Helper to get all x values between 2 x coords
 static vector<int> InterpolateX(int y0, int x0, int y1, int x1)
 {
     vector<int> listOfX;
@@ -98,7 +112,9 @@ void Model::BuildTriangles(MainRenderer& renderer, const Camera& camera){
         }
 
         ScreenTriangle s(screenPoint1, screenPoint2, screenPoint3);
+        // Set the original local triangle index
         s.triangleIndex = i;
+        // If highlighted, set to true
         s.isHighlighted = i == mesh.highlightedTriangleIdx;
         mesh.screenTriangles.push_back(s);
     }
@@ -123,7 +139,7 @@ void Model::DrawFilled(MainRenderer& renderer){
         Vector2 screenPoint2 = mesh.screenTriangles[i].point2;
         Vector2 screenPoint3 = mesh.screenTriangles[i].point3;
 
-        /*in constructor, screenTriangle automatically sorts them by y cord*/
+        /*ScreenTriangle's constructor automatically sorts points by y coord*/
 
         if (screenPoint1.y == screenPoint3.y) continue;
         
