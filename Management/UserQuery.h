@@ -11,6 +11,12 @@ using namespace std;
 // NOTE:
 // The UI now supports typing an .obj path directly (ImGui "Load" button).
 // This function remains for compatibility, but MUST NOT destroy/truncate files.
+
+/* The file copying logic got from:
+   https://en.cppreference.com/w/cpp/filesystem/copy_file
+   This cppreference page explains how to safely copy files using C++17 filesystem.
+*/
+
 string chooseOBJ() {
     // Default to a safe built-in model; let the ImGui UI load anything else.
     return "Objects/monkey.obj";
