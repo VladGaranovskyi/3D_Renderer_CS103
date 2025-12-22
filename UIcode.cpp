@@ -1,3 +1,12 @@
+/* The Windows file dialog implementation in OpenObjFileDialog()from:
+   https://learn.microsoft.com/en-us/windows/win32/dlgbox/open-and-save-as-dialog-boxes
+   Microsoft's documentation on using OPENFILENAME structure.
+   
+   The ImGui implementation patterns (Begin/End, InputFloat3, etc.) from:
+   https://github.com/ocornut/imgui/wiki/Getting-Started
+   ImGui's official getting started guide and examples.
+*/
+
 #include "UIcode.h"
 
 #ifdef _WIN32
