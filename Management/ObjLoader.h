@@ -1,3 +1,10 @@
+/* The overall structure for loading 3D models to inspired by:
+   https://learnopengl.com/book/learnopengl_book.pdf
+   This tutorial series explains how model loaders are typically structured.
+
+   i got pdf from online which was helpful
+*/
+
 #ifndef OBJLOADER_H
 #define OBJLOADER_H
 

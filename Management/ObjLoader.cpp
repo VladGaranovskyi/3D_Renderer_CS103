@@ -1,3 +1,17 @@
+/* The OBJ file parsing logic (reading 'v' and 'f' lines) was learned from:
+   https://en.wikipedia.org/wiki/Wavefront_.obj_file
+   This Wikipedia article explains the .obj file format structure.
+   
+   The fan triangulation algorithm in ToMesh():
+   https://www.khronos.org/opengl/wiki/Calculating_a_Surface_Normal
+   This helped understand how to convert polygon faces into triangles.
+   
+   The file system operations (copying files, creating directories) use C++17 filesystem library.
+   Basic usage was learned from:
+   https://en.cppreference.com/w/cpp/filesystem
+   
+*/
+
 #include "ObjLoader.h"
 
 #include <fstream>
